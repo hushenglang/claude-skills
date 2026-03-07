@@ -10,12 +10,15 @@ Usage:
     python extract_youtube_transcript.py "https://youtu.be/VIDEO_ID" --lang zh-Hant en
     python extract_youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" --output transcript.txt
     python extract_youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" --list-langs
+    python extract_youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID" --cookies youtube_cookies.txt
 """
 
 import argparse
 import sys
+from http.cookiejar import MozillaCookieJar
 from urllib.parse import urlparse, parse_qs
 
+import requests
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import (
     TranscriptsDisabled,
@@ -79,9 +82,20 @@ def format_transcript(transcript) -> str:
     return " ".join(snippet.text for snippet in transcript)
 
 
-def list_available_languages(video_id: str) -> None:
+def make_api(cookies: str | None) -> YouTubeTranscriptApi:
+    """Instantiate the API, optionally with a Netscape cookies file."""
+    if cookies:
+        jar = MozillaCookieJar(cookies)
+        jar.load(ignore_discard=True, ignore_expires=True)
+        session = requests.Session()
+        session.cookies = jar
+        return YouTubeTranscriptApi(http_client=session)
+    return YouTubeTranscriptApi()
+
+
+def list_available_languages(video_id: str, cookies: str | None) -> None:
     """Print all available transcript languages for a video."""
-    api = YouTubeTranscriptApi()
+    api = make_api(cookies)
     transcript_list = api.list(video_id)
     print(f"Available transcripts for video '{video_id}':\n")
     for t in transcript_list:
@@ -89,9 +103,9 @@ def list_available_languages(video_id: str) -> None:
         print(f"  [{t.language_code}] {t.language} ({kind})")
 
 
-def fetch_transcript(video_id: str, languages: list[str]) -> str:
+def fetch_transcript(video_id: str, languages: list[str], cookies: str | None) -> str:
     """Fetch transcript text, trying preferred languages in order."""
-    api = YouTubeTranscriptApi()
+    api = make_api(cookies)
 
     try:
         transcript = api.fetch(video_id, languages=languages)
@@ -130,6 +144,12 @@ def main() -> None:
         action="store_true",
         help="List all available transcript languages for the video and exit",
     )
+    parser.add_argument(
+        "--cookies",
+        metavar="FILE",
+        help="Path to a Netscape-format cookies file for YouTube authentication. "
+             "Useful when requests are blocked on cloud/server IPs.",
+    )
 
     args = parser.parse_args()
 
@@ -143,7 +163,7 @@ def main() -> None:
     # --- Step 2: list languages if requested ---
     if args.list_langs:
         try:
-            list_available_languages(video_id)
+            list_available_languages(video_id, args.cookies)
         except VideoUnavailable:
             print(f"Error: Video '{video_id}' is unavailable.", file=sys.stderr)
             sys.exit(1)
@@ -154,7 +174,7 @@ def main() -> None:
 
     # --- Step 3: fetch transcript ---
     try:
-        text = fetch_transcript(video_id, args.lang)
+        text = fetch_transcript(video_id, args.lang, args.cookies)
     except TranscriptsDisabled:
         print(
             f"Error: Transcripts/subtitles are disabled for video '{video_id}'.",
