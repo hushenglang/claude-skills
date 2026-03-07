@@ -1,5 +1,6 @@
 ---
 name: perplexity-research
+version: 2.0.0
 description: Conduct deep research using Perplexity Agent API with web search, reasoning, and multi-model analysis. Use when the user needs current information, market research, trend analysis, investment insights, or comprehensive research on any topic requiring web search and reasoning capabilities.
 ---
 
