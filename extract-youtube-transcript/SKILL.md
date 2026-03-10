@@ -17,7 +17,7 @@ pip show youtube-transcript-api &>/dev/null || pip install youtube-transcript-ap
 ## Quick Start
 
 ```bash
-python extract_youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID"
+python scripts/extract_youtube_transcript.py "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
 Supported URL formats: `youtube.com/watch?v=`, `youtu.be/`, `/embed/`, `/live/`, `/shorts/`, or a raw 11-char video ID.
@@ -27,7 +27,7 @@ Supported URL formats: `youtube.com/watch?v=`, `youtu.be/`, `/embed/`, `/live/`,
 ### Fetch with preferred language(s)
 
 ```bash
-python extract_youtube_transcript.py "URL" --lang zh-Hant en
+python scripts/extract_youtube_transcript.py "URL" --lang zh-Hant en
 ```
 
 Pass languages in priority order. Falls back to any available transcript if none match.
@@ -35,7 +35,7 @@ Pass languages in priority order. Falls back to any available transcript if none
 ### Save transcript to file
 
 ```bash
-python extract_youtube_transcript.py "URL" --output transcript.txt
+python scripts/extract_youtube_transcript.py "URL" --output transcript.txt
 ```
 
 Text is printed to stdout and also written to the file.
@@ -43,8 +43,8 @@ Text is printed to stdout and also written to the file.
 ### List available languages first
 
 ```bash
-python extract_youtube_transcript.py "URL" --list-langs
-```
+python scripts/extract_youtube_transcript.py "URL" --list-langs
+```     
 
 Use this to discover what language codes are available before fetching.
 
