@@ -6,6 +6,7 @@ A personal collection of agent skills for [Cursor](https://cursor.com), publisha
 
 | Skill | Description |
 |-------|-------------|
+| [english-word-coach](./english-word-coach/) | English vocabulary coach with word analysis, library management, and spaced-repetition daily review |
 | [extract-youtube-transcript](./extract-youtube-transcript/) | Fetch plain-text transcripts from YouTube videos using a local Python script |
 | [perplexity-research](./perplexity-research/) | Deep research via Perplexity Agent API with web search and multi-model analysis |
 
