@@ -129,16 +129,16 @@ Group 5: W5-MCQ,    W1-Fill,  W2-Trans
 
 ### Group 1
 
-#### Q1 (MCQ — [wordA])
+#### Q1 (MCQ)
 [Sentence testing wordA meaning/usage]
 A. [option]　B. [option]　C. [option]*　D. [option]
-Answer: C
+Answer: C [wordA]
 
-#### Q2 (Fill-blank — [wordB])
+#### Q2 (Fill-blank)
 [Sentence with ___ where wordB belongs]
 Answer: [wordB]
 
-#### Q3 (Translation — [wordC])
+#### Q3 (Translation)
 请用 [wordC] 翻译：[Chinese sentence that naturally calls for wordC]
 Answer: [reference English sentence using wordC]
 
@@ -151,7 +151,7 @@ Status: In Progress
 
 ### Sub-mode: Conduct review (one question per turn)
 
-1. Present the **current question** (hide the answer line from the user — show only the question stem and options/prompt).
+1. Present the **current question** using a neutral heading like `**Question N/15**` — do NOT show the question's `#### QN` heading or any word label. Hide the answer line. Show only the question stem and options/prompt.
 2. Wait for the user's reply.
 3. Respond:
    - ✅ **正确！** + one-sentence explanation  
