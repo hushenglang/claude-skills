@@ -1,6 +1,6 @@
 ---
 name: english-word-coach
-version: 1.1.0
+version: 1.2.0
 description: >-
   English vocabulary learning coach with word analysis, vocabulary library management, and
   spaced-repetition daily review. Use when the user inputs a single English word (to analyze
