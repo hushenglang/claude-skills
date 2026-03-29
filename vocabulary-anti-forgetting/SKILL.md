@@ -1,5 +1,6 @@
 ---
 name: vocabulary-anti-forgetting
+version: 1.0.0
 description: >-
   Anti-forgetting vocabulary review using spaced repetition. Selects 10 words
   from asset/vocabulary_bank.md, shows a summary first, then quizzes with 30
