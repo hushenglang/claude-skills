@@ -1,17 +1,18 @@
 ---
 name: vocabulary-anti-forgetting
-version: 1.0.0
+version: 1.1.0
 description: >-
   Anti-forgetting vocabulary review using spaced repetition. Selects 10 words
   from asset/vocabulary_bank.md, shows a summary first, then quizzes with 30
-  shuffled questions (3 per word: MCQ, fill-blank, translation). Records review
-  history to memory. Use when the user says "单词复习", "复习", "review words",
-  or any similar command indicating they want to do vocabulary review or practice.
+  shuffled questions (3 per word: MCQ, fill-blank, translation) presented in
+  batches of 3 (one batch per reply). Records review history to memory.
+  Use when the user says "单词复习", "复习", "review words", or any similar
+  command indicating they want to do vocabulary review or practice.
 ---
 
 # Vocabulary Anti-Forgetting
 
-Daily vocabulary review using spaced repetition. Reviews 10 words per session with 3 question types.
+Daily vocabulary review using spaced repetition. Reviews 10 words per session with 30 questions, presented **3 per reply** (each batch covers 3 different words).
 
 ---
 
@@ -27,7 +28,7 @@ Activate when user says: `单词复习` / `复习` / `review` / `开始复习` /
 1. Load vocabulary bank + review history
 2. Select 10 words (spaced repetition logic)
 3. Show Word Summary (all 10 words + meanings)
-4. Quiz: 30 questions (3 per word, shuffled)
+4. Quiz: 30 questions (3 per word, shuffled), presented 3 at a time
 5. Save session record to memory
 ```
 
@@ -72,11 +73,11 @@ Before any questions, output a summary table:
 ...
 ```
 
-Then say: **准备好了吗？复习开始！** and immediately present Question 1.
+Then say: **准备好了吗？复习开始！** and immediately present the first batch of 3 questions.
 
 ---
 
-## Step 4 — Quiz (30 Questions)
+## Step 4 — Quiz (30 Questions, 3 per Batch)
 
 ### Question Generation
 
@@ -106,39 +107,37 @@ Group 10: W10-MCQ,  W1-Fill,  W2-Trans
 
 ### Conducting the Quiz
 
-Present **one question at a time**:
+Present **one group (3 questions) per reply**:
 
-1. Show: `**Question N/30**` + question type label + question content (hide answer)
-2. Wait for user reply
-3. Respond:
+1. Output all 3 questions of the current group at once, numbered `**Question N/30**`, each with its type label (hide answers)
+2. Wait for the user to answer all 3
+3. For each answer respond:
    - ✅ **正确！** + one-sentence explanation (Chinese ok)
    - ❌ **不对。** 正确答案是 `[X]`。[one-sentence explanation]
    - Translation: accept any grammatically correct sentence using the target word; give a brief comment
-4. Automatically present the next question
+4. After giving feedback for all 3, automatically present the next group of 3 questions
 
-**MCQ format example:**
+**Example — one batch output:**
 ```
-**Question 3/30** [选择题]
+**Question 1/30** [选择题]
 
 She showed great ___ after losing her job, bouncing back within weeks.
 
 A. resilience　B. arrogance　C. lethargy　D. compliance
-```
 
-**Fill-blank format example:**
-```
-**Question 7/30** [填空题]
+---
+
+**Question 2/30** [填空题]
 
 He decided to ___ and apologize instead of fighting back.
 （提示：意为"采取高姿态"）
-```
 
-**Translation format example:**
-```
-**Question 12/30** [翻译题]
+---
 
-请用 "resilience" 翻译以下句子：
-她在重重挫折后展现出了惊人的韧性。
+**Question 3/30** [翻译题]
+
+请用 "devour" 翻译以下句子：
+她一口气把那本小说读完了。
 ```
 
 ---
