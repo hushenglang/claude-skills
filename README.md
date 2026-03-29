@@ -9,6 +9,7 @@ A personal collection of agent skills for [Cursor](https://cursor.com), publisha
 | [english-word-coach](./english-word-coach/) | English vocabulary coach with word analysis, library management, and spaced-repetition daily review |
 | [extract-youtube-transcript](./extract-youtube-transcript/) | Fetch plain-text transcripts from YouTube videos using a local Python script |
 | [perplexity-research](./perplexity-research/) | Deep research via Perplexity Agent API with web search and multi-model analysis |
+| [vocabulary-anti-forgetting](./vocabulary-anti-forgetting/) | Spaced-repetition review of 10 words/day from a pre-loaded PDF vocabulary bank, with MCQ, fill-blank, and translation questions |
 
 ---
 
