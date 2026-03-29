@@ -1,18 +1,19 @@
 ---
 name: vocabulary-anti-forgetting
-version: 1.1.0
+version: 1.2.0
 description: >-
   Anti-forgetting vocabulary review using spaced repetition. Selects 10 words
   from asset/vocabulary_bank.md, shows a summary first, then quizzes with 30
-  shuffled questions (3 per word: MCQ, fill-blank, translation) presented in
-  batches of 3 (one batch per reply). Records review history to memory.
+  shuffled questions (3 per word: MCQ and fill-blank only) presented in
+  batches of 3 (one batch per reply, each batch covers 3 different words).
+  Records review history to memory.
   Use when the user says "单词复习", "复习", "review words", or any similar
   command indicating they want to do vocabulary review or practice.
 ---
 
 # Vocabulary Anti-Forgetting
 
-Daily vocabulary review using spaced repetition. Reviews 10 words per session with 30 questions, presented **3 per reply** (each batch covers 3 different words).
+Daily vocabulary review using spaced repetition. Reviews 10 words per session with 30 questions (only **选择题** and **填空题**), presented **3 per reply** (each batch covers 3 different words).
 
 ---
 
@@ -81,28 +82,34 @@ Then say: **准备好了吗？复习开始！** and immediately present the firs
 
 ### Question Generation
 
-Generate **30 questions** — 3 per word (one of each type):
+Generate **30 questions** — 3 per word using only two types:
 
 | Type | 中文 | Description |
 |------|------|-------------|
 | MCQ | 选择题 | 4 options A–D; test meaning or usage in context |
 | Fill-blank | 填空题 | Sentence with `___`; answer is the word/phrase |
-| Translation | 翻译题 | Chinese sentence → write English using the target word |
+
+Each word gets **3 questions**: W1–W5 get (MCQ, Fill, MCQ); W6–W10 get (Fill, MCQ, Fill). Total: 15 MCQ + 15 Fill.
 
 ### Shuffle Rule
 
-Arrange 30 questions into 10 groups of 3 so that:
+Arrange 30 questions into **10 groups of 3** so that:
 - Each group has questions from **3 different words**
 - No group has 2+ questions about the same word
-- Each group has one of each type (MCQ, Fill-blank, Translation)
+- Each group mixes question types
 
-Example layout for words W1–W10:
+Fixed layout for words W1–W10:
 ```
-Group 1:  W1-MCQ,   W2-Fill,  W3-Trans
-Group 2:  W2-MCQ,   W3-Fill,  W4-Trans
-Group 3:  W3-MCQ,   W4-Fill,  W5-Trans
-...
-Group 10: W10-MCQ,  W1-Fill,  W2-Trans
+Group 1:  W1-MCQ,   W2-Fill,  W3-MCQ
+Group 2:  W4-MCQ,   W5-Fill,  W6-Fill
+Group 3:  W7-MCQ,   W8-Fill,  W9-MCQ
+Group 4:  W10-Fill, W1-Fill,  W2-MCQ
+Group 5:  W3-Fill,  W4-MCQ,   W5-MCQ
+Group 6:  W6-MCQ,   W7-Fill,  W8-MCQ
+Group 7:  W9-Fill,  W10-MCQ,  W1-MCQ
+Group 8:  W2-Fill,  W3-MCQ,   W4-Fill
+Group 9:  W5-Fill,  W6-Fill,  W7-MCQ
+Group 10: W8-Fill,  W9-MCQ,   W10-Fill
 ```
 
 ### Conducting the Quiz
@@ -114,7 +121,6 @@ Present **one group (3 questions) per reply**:
 3. For each answer respond:
    - ✅ **正确！** + one-sentence explanation (Chinese ok)
    - ❌ **不对。** 正确答案是 `[X]`。[one-sentence explanation]
-   - Translation: accept any grammatically correct sentence using the target word; give a brief comment
 4. After giving feedback for all 3, automatically present the next group of 3 questions
 
 **Example — one batch output:**
@@ -134,10 +140,11 @@ He decided to ___ and apologize instead of fighting back.
 
 ---
 
-**Question 3/30** [翻译题]
+**Question 3/30** [选择题]
 
-请用 "devour" 翻译以下句子：
-她一口气把那本小说读完了。
+Which word best describes someone who reads books voraciously?
+
+A. devour　B. linger　C. glance　D. skim
 ```
 
 ---
@@ -168,7 +175,7 @@ Append to `memory/vocab_sessions.md` (create if absent):
 ## Session: YYYY-MM-DD HH:MM
 
 **Words reviewed:** word1, word2, word3, word4, word5, word6, word7, word8, word9, word10
-**Score:** [correct]/30
+**Score:** [correct]/30 (选择题+填空题)
 **Duration:** ~[N] minutes
 ```
 
