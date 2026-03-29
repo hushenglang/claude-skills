@@ -96,25 +96,24 @@ If `today_count > 5`, append a gentle reminder on the next line:
 1. Read `memory/ENGLISH_WORDS.md`.
 2. Select words where `Next Review <= today` (sorted by `Next Review` ascending). If fewer than 5, fill up to 5 by adding words with the smallest review counts.
 3. Pick exactly **5 words**.
-4. Generate **15 questions** — 3 per word (one of each type), then **shuffle across groups** so each group covers different words:
+4. Generate **10 questions** — 2 per word (one MCQ + one Fill-blank), then **shuffle across groups** so each group covers different words:
 
-**Three question types:**
+**Two question types:**
 
 | Type | Description |
 |------|-------------|
 | MCQ | Multiple-choice, 4 options A–D; test meaning or usage in context |
 | Fill-blank | `___` in a sentence; answer is the word |
-| Translation | Give a Chinese sentence; user writes an English sentence using the word |
 
-**Shuffle rule:** Arrange the 15 questions into 5 groups of 3 so that **each group contains questions from 3 different words**. No group may have 2 or more questions about the same word. Each group should ideally contain one of each type (MCQ, Fill-blank, Translation).
+**Shuffle rule:** Arrange the 10 questions into 5 groups of 2 so that **each group contains questions from 2 different words**. No group may have 2 questions about the same word. Each group contains one MCQ and one Fill-blank.
 
 Example layout for words W1–W5:
 ```
-Group 1: W1-MCQ,    W2-Fill,  W3-Trans
-Group 2: W2-MCQ,    W3-Fill,  W4-Trans
-Group 3: W3-MCQ,    W4-Fill,  W5-Trans
-Group 4: W4-MCQ,    W5-Fill,  W1-Trans
-Group 5: W5-MCQ,    W1-Fill,  W2-Trans
+Group 1: W1-MCQ,    W2-Fill
+Group 2: W2-MCQ,    W3-Fill
+Group 3: W3-MCQ,    W4-Fill
+Group 4: W4-MCQ,    W5-Fill
+Group 5: W5-MCQ,    W1-Fill
 ```
 
 5. Write `memory/DAILY_REVIEW_YYYYMMDD.md`:
@@ -138,33 +137,30 @@ Answer: C [wordA]
 [Sentence with ___ where wordB belongs]
 Answer: [wordB]
 
-#### Q3 (Translation)
-请用 [wordC] 翻译：[Chinese sentence that naturally calls for wordC]
-Answer: [reference English sentence using wordC]
-
 [... Groups 2–5 following the same shuffle pattern ...]
 
 ## Progress
-Completed: 0/15
+Completed: 0/10
 Status: In Progress
 ```
 
 ### Sub-mode: Conduct review (one question per turn)
 
-1. Present the **current question** using a neutral heading like `**Question N/15**` — do NOT show the question's `#### QN` heading or any word label. Hide the answer line. Show only the question stem and options/prompt.
+1. Present the **current question** using a neutral heading like `**Question N/10**` — do NOT show the question's `#### QN` heading or any word label. Hide the answer line. Show only the question stem and options/prompt.
 2. Wait for the user's reply.
-3. Respond:
-   - ✅ **正确！** + one-sentence explanation  
-   - ❌ **不对。** 正确答案是 [X]。[one-sentence explanation]
-   - For Translation (Q3/Q6/Q9/Q12/Q15): accept any grammatically correct sentence that uses the word appropriately; give a brief comment.
-4. Update `Completed: N/15` in the daily review file.
+3. **Strictly verify the user's answer against the correct answer in the file before responding:**
+   - For MCQ: compare the user's chosen letter (A/B/C/D) exactly against the correct letter in the `Answer:` line. Only mark correct if they match exactly.
+   - For Fill-blank: compare the user's word against the answer (case-insensitive). Only mark correct if the word matches.
+   - ✅ **正确！** + one-sentence explanation (only when the answer is genuinely correct)
+   - ❌ **不对。** 正确答案是 [X]。[one-sentence explanation] (whenever the answer does not match)
+4. Update `Completed: N/10` in the daily review file.
 5. Present the **next question** automatically.
 
 ### Sub-mode: Complete session
 
-After Q15 is answered:
+After Q10 is answered:
 
-1. Update `memory/DAILY_REVIEW_YYYYMMDD.md`: change `Status: In Progress` → `Status: ✅ Completed YYYY-MM-DD HH:MM`.
+1. Update `memory/DAILY_REVIEW_YYYYMMDD.md`: change `Completed: 10/10` and `Status: In Progress` → `Status: ✅ Completed YYYY-MM-DD HH:MM`.
 2. For each of the 5 reviewed words, update `memory/ENGLISH_WORDS.md`:
    - `Review Count` += 1
    - `Last Review` = today
@@ -210,7 +206,7 @@ resilience, leverage, attrition, benchmark, mitigation
 ## Questions
 ...
 ## Progress
-Completed: 15/15
+Completed: 10/10
 Status: ✅ Completed 2026-03-20 21:30
 ```
 
@@ -222,4 +218,4 @@ Status: ✅ Completed 2026-03-20 21:30
 - The `memory/` directory is relative to the **current working directory**. Create it if absent.
 - Never delete or modify rows in `ENGLISH_WORDS.md` except when updating review stats after a completed session.
 - Do NOT reveal the answer line when presenting a question to the user.
-- If the vocabulary has fewer than 5 words when review is triggered, use all available words and adjust question count to `words × 3`.
+- If the vocabulary has fewer than 5 words when review is triggered, use all available words and adjust question count to `words × 2`.
