@@ -1,12 +1,12 @@
 ---
 name: english-word-coach
-version: 1.2.0
+version: 2.0.0
 description: >-
   English vocabulary learning coach with word analysis, vocabulary library management, and
   spaced-repetition daily review. Use when the user inputs a single English word (to analyze
   and collect it), says "收录" followed by a word, or says "复习" / "review" / "开始复习" to start
-  today's review session. Manages memory/ENGLISH_WORDS.md and memory/DAILY_REVIEW_YYYYMMDD.md
-  in the current working directory.
+  today's review session (presents each word's full analysis one by one). Manages
+  memory/ENGLISH_WORDS.md and memory/DAILY_REVIEW_YYYYMMDD.md in the current working directory.
 ---
 
 # English Word Coach
@@ -88,7 +88,7 @@ If `today_count > 5`, append a gentle reminder on the next line:
 
 ### Sub-mode: Start or Resume
 
-- If `memory/DAILY_REVIEW_YYYYMMDD.md` (today's date) exists and `Status` is `In Progress`, **resume** from the next unanswered question — do NOT regenerate questions.
+- If `memory/DAILY_REVIEW_YYYYMMDD.md` (today's date) exists and `Status` is `In Progress`, **resume** from the next unreviewed word — do NOT regenerate the plan.
 - Otherwise, generate a fresh plan (Sub-mode: Generate plan below).
 
 ### Sub-mode: Generate plan
@@ -96,27 +96,7 @@ If `today_count > 5`, append a gentle reminder on the next line:
 1. Read `memory/ENGLISH_WORDS.md`.
 2. Select words where `Next Review <= today` (sorted by `Next Review` ascending). If fewer than 5, fill up to 5 by adding words with the smallest review counts.
 3. Pick exactly **5 words**.
-4. Generate **10 questions** — 2 per word (one MCQ + one Fill-blank), then **shuffle across groups** so each group covers different words:
-
-**Two question types:**
-
-| Type | Description |
-|------|-------------|
-| MCQ | Multiple-choice, 4 options A–D; test meaning or usage in context |
-| Fill-blank | `___` in a sentence; answer is the word |
-
-**Shuffle rule:** Arrange the 10 questions into 5 groups of 2 so that **each group contains questions from 2 different words**. No group may have 2 questions about the same word. Each group contains one MCQ and one Fill-blank.
-
-Example layout for words W1–W5:
-```
-Group 1: W1-MCQ,    W2-Fill
-Group 2: W2-MCQ,    W3-Fill
-Group 3: W3-MCQ,    W4-Fill
-Group 4: W4-MCQ,    W5-Fill
-Group 5: W5-MCQ,    W1-Fill
-```
-
-5. Write `memory/DAILY_REVIEW_YYYYMMDD.md`:
+4. Write `memory/DAILY_REVIEW_YYYYMMDD.md`:
 
 ```markdown
 # Daily Review - YYYY-MM-DD
@@ -124,44 +104,25 @@ Group 5: W5-MCQ,    W1-Fill
 ## Words for Today
 [word1], [word2], [word3], [word4], [word5]
 
-## Questions
-
-### Group 1
-
-#### Q1 (MCQ)
-[Sentence testing wordA meaning/usage]
-A. [option]　B. [option]　C. [option]*　D. [option]
-Answer: C [wordA]
-
-#### Q2 (Fill-blank)
-[Sentence with ___ where wordB belongs]
-Answer: [wordB]
-
-[... Groups 2–5 following the same shuffle pattern ...]
-
 ## Progress
-Completed: 0/10
+Completed: 0/[total]
 Status: In Progress
 ```
 
-### Sub-mode: Conduct review (one question per turn)
+### Sub-mode: Conduct review (one word per message)
 
-1. Present the **current question** using a neutral heading like `**Question N/10**` — do NOT show the question's `#### QN` heading or any word label. Hide the answer line. Show only the question stem and options/prompt.
-2. Wait for the user's reply.
-3. **Strictly verify the user's answer against the correct answer in the file before responding:**
-   - For MCQ: compare the user's chosen letter (A/B/C/D) exactly against the correct letter in the `Answer:` line. Only mark correct if they match exactly.
-   - For Fill-blank: compare the user's word against the answer (case-insensitive). Only mark correct if the word matches.
-   - ✅ **正确！** + one-sentence explanation (only when the answer is genuinely correct)
-   - ❌ **不对。** 正确答案是 [X]。[one-sentence explanation] (whenever the answer does not match)
-4. Update `Completed: N/10` in the daily review file.
-5. Present the **next question** automatically.
+For each word in order:
+
+1. Present the word analysis using the **same format as Mode 1 Step 1** (IPA, 词性 & 核心含义, 工作场景常用搭配, 词根记忆法).
+2. Add a progress line at the end: `📖 复习进度：[N]/[total]`
+3. **Wait for the user's next message** before presenting the next word. The user does not need to answer anything — any reply (e.g. "next", "ok", "继续") advances to the next word.
 
 ### Sub-mode: Complete session
 
-After Q10 is answered:
+After all words have been presented:
 
-1. Update `memory/DAILY_REVIEW_YYYYMMDD.md`: change `Completed: 10/10` and `Status: In Progress` → `Status: ✅ Completed YYYY-MM-DD HH:MM`.
-2. For each of the 5 reviewed words, update `memory/ENGLISH_WORDS.md`:
+1. Update `memory/DAILY_REVIEW_YYYYMMDD.md`: change `Completed: [total]/[total]` and `Status: In Progress` → `Status: ✅ Completed YYYY-MM-DD HH:MM`.
+2. For each reviewed word, update `memory/ENGLISH_WORDS.md`:
    - `Review Count` += 1
    - `Last Review` = today
    - `Next Review` = today + interval from table below
@@ -203,10 +164,8 @@ After Q10 is answered:
 ## Words for Today
 resilience, leverage, attrition, benchmark, mitigation
 
-## Questions
-...
 ## Progress
-Completed: 10/10
+Completed: 5/5
 Status: ✅ Completed 2026-03-20 21:30
 ```
 
@@ -217,5 +176,4 @@ Status: ✅ Completed 2026-03-20 21:30
 - Always **read** a file before writing to avoid overwriting existing content.
 - The `memory/` directory is relative to the **current working directory**. Create it if absent.
 - Never delete or modify rows in `ENGLISH_WORDS.md` except when updating review stats after a completed session.
-- Do NOT reveal the answer line when presenting a question to the user.
-- If the vocabulary has fewer than 5 words when review is triggered, use all available words and adjust question count to `words × 2`.
+- If the vocabulary has fewer than 5 words when review is triggered, use all available words.
