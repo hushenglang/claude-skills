@@ -52,8 +52,13 @@ Each session:
 
 ## Data Storage
 
-Review progress is stored at:
+Review progress is stored at `<workspace>/memory/review_log.md`. The script resolves this by going up two levels from the skill folder (past the `skills/` directory) to the workspace root. This works across different OpenClaw workspace instances.
 
+For example, if the skill is installed at:
+```
+/root/.openclaw/workspace/gaby-english-coach/skills/vocabulary-anti-forgetting/
+```
+Then the review log is at:
 ```
 /root/.openclaw/workspace/gaby-english-coach/memory/review_log.md
 ```

@@ -6,6 +6,7 @@ displays them as a study session, and tracks progress in a review log.
 """
 
 import argparse
+import os
 import re
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -15,9 +16,11 @@ from typing import Dict, List, Optional, Tuple
 INTERVALS = {0: 0, 1: 1, 2: 2, 3: 4, 4: 7, 5: 15, 6: 30, 7: 60}
 MAX_LEVEL = 7
 
-MEMORY_DIR = Path("/root/.openclaw/workspace/gaby-english-coach/memory")
+SKILL_DIR = Path(__file__).parent
+WORKSPACE_DIR = SKILL_DIR.parent.parent  # .../skills/vocabulary-anti-forgetting/ -> .../workspace-root/
+MEMORY_DIR = Path(os.environ.get("REVIEW_MEMORY_DIR", "")) or WORKSPACE_DIR / "memory"
 LOG_PATH = MEMORY_DIR / "review_log.md"
-BANK_PATH = Path(__file__).parent / "asset" / "vocabulary_bank.md"
+BANK_PATH = SKILL_DIR / "asset" / "vocabulary_bank.md"
 
 INITIAL_LOG = """\
 # Vocabulary Review Log
