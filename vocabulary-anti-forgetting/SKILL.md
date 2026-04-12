@@ -34,74 +34,21 @@ Each word has a **level** that determines when it should be reviewed next:
 | 6 | Review again in **30 days** | mastered |
 | 7 | Review again in **60 days** | mastered |
 
-- **Correct answer** → level + 1, schedule next review per table above.
-- **Wrong answer** → reset level to 1, schedule review for tomorrow.
+Each time a word is shown (studied), it counts as a correct review: level + 1, schedule next review per the interval table.
 
 ## Daily Review Session Flow (10 words)
 
-When triggered, follow these steps:
+When triggered, run the review script directly:
 
-### Step 1: Read state
-
-1. Read `/root/.openclaw/workspace/gaby-english-coach/memory/review_log.md`.
-2. Read today's date.
-
-### Step 2: Select 10 words
-
-Pick words using this priority:
-
-1. **Due for review**: words where `next_review_date <= today`, sorted by oldest `next_review_date` first (most overdue gets priority).
-2. **New words**: if fewer than 10 are due, fill the remaining slots with words from `vocabulary_bank.md` that have NO entry in `review_log.md` yet (pick sequentially by ID).
-
-Aim for a healthy mix — at least 3 new words per session when possible, but always prioritize overdue reviews.
-
-### Step 3: Quiz the user
-
-For each word, present a flashcard in this format:
-
-```
-📖 Word [N/10]
-
-**English:** ___________
-**Chinese:** 依偎；蜷缩；紧贴着抱
-
-Do you know this word? Try to recall the English phrase, then say "show" or tell me your answer.
+```bash
+python vocabulary-anti-forgetting/review.py
 ```
 
-Alternate direction each session:
-- **Odd sessions**: Show Chinese → ask user to recall English.
-- **Even sessions**: Show English → ask user to recall Chinese.
+This handles everything in one step: reads state, selects 10 words (due reviews first, then new words), displays them all at once, updates `review_log.md` with incremented levels and next review dates, and prints a session summary.
 
-Track the session count in `review_log.md` header.
+For custom word count: `python vocabulary-anti-forgetting/review.py --count 5`
 
-### Step 4: Score and respond
-
-After the user responds to each card:
-- If **correct** (or close enough — minor typos are OK): congratulate briefly, mark correct.
-- If **wrong** or user says "不会" / "skip": reveal the answer, mark wrong.
-
-### Step 5: Update review_log.md
-
-After all 10 words are done:
-1. Update each word's entry in `review_log.md`:
-   - Correct → increment level, compute new `next_review_date`.
-   - Wrong → reset level to 1, set `next_review_date` to tomorrow.
-   - Update `last_reviewed` to today.
-   - Increment `review_count`.
-2. Update the session counter in the file header.
-3. Print a summary:
-
-```
-📊 Session Summary
-✅ Correct: 7/10
-❌ Wrong: 3/10
-📅 Next review: 3 words due tomorrow, 2 words due in 2 days
-
-Wrong words (review again tomorrow):
-  - snuggle (依偎；蜷缩；紧贴着抱)
-  - fleeting (短暂的；转瞬即逝的)
-  - ultimatum (最后通牒)
-```
+Show the script output to the user as-is.
 
 ## review_log.md Format
 
